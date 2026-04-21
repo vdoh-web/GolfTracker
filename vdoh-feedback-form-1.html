@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VDOH - Feedback</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; min-height: 100vh; display: flex; justify-content: center; padding: 20px; }
+    .container { max-width: 640px; width: 100%; }
+    h1 { text-align: center; font-size: 28px; margin: 20px 0 8px; }
+    .subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 14px; }
+    .card { background: #fff; border-radius: 16px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .card h2 { font-size: 16px; margin-bottom: 16px; }
+    .required::after { content: ' *'; color: #e53935; }
+    /* NPS */
+    .nps-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .nps-btn { width: 44px; height: 44px; border-radius: 10px; border: 2px solid #e0e0e0; background: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .nps-btn.active { background: #1a73e8; color: #fff; border-color: #1a73e8; }
+    .nps-labels { display: flex; justify-content: space-between; font-size: 11px; color: #999; margin-top: 6px; }
+    /* Stars */
+    .stars { display: flex; gap: 8px; }
+    .star { font-size: 36px; cursor: pointer; color: #ddd; transition: color .2s; }
+    .star.active { color: #ffc107; }
+    /* Chips */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { padding: 8px 16px; border-radius: 20px; border: 2px solid #e0e0e0; background: #fff; cursor: pointer; font-size: 14px; transition: all .2s; }
+    .chip.active { background: #e3f2fd; border-color: #1a73e8; color: #1a73e8; }
+    /* Matrix */
+    .matrix-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .matrix-table th { text-align: center; padding: 8px 4px; font-weight: 500; color: #666; }
+    .matrix-table td { padding: 10px 4px; border-top: 1px solid #f0f0f0; }
+    .matrix-table td:first-child { font-weight: 500; }
+    .matrix-table td:not(:first-child) { text-align: center; }
+    .matrix-radio { width: 20px; height: 20px; cursor: pointer; accent-color: #1a73e8; }
+    /* Text */
+    textarea, input[type=text] { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; font-family: inherit; resize: vertical; transition: border-color .2s; }
+    textarea:focus, input[type=text]:focus { outline: none; border-color: #1a73e8; }
+    /* Radio options */
+    .radio-group { display: flex; flex-direction: column; gap: 10px; }
+    .radio-opt { display: flex; align-items: center; gap: 10px; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; cursor: pointer; transition: all .2s; }
+    .radio-opt.active { border-color: #1a73e8; background: #e3f2fd; }
+    .radio-opt input { accent-color: #1a73e8; width: 18px; height: 18px; }
+    /* Submit */
+    .submit-btn { width: 100%; padding: 16px; background: #1a73e8; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; cursor: pointer; transition: background .2s; margin-top: 8px; }
+    .submit-btn:hover { background: #1557b0; }
+    .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+    .error { color: #e53935; font-size: 12px; margin-top: 6px; display: none; }
+    .success-msg { text-align: center; padding: 60px 20px; }
+    .success-msg h2 { font-size: 24px; margin-bottom: 12px; color: #2e7d32; }
+    /* Hidden iframe */
+    #yandex-iframe { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container" id="formContainer">
+    <h1>VDOH</h1>
+    <p class="subtitle">We'd love your feedback!</p>
+
+    <!-- Q1: NPS -->
+    <div class="card">
+      <h2 class="required">How likely are you to recommend us?</h2>
+      <div class="nps-row" id="npsRow"></div>
+      <div class="nps-labels"><span>Not at all</span><span>Very likely</span></div>
+      <div class="error" id="npsError">Please select a score</div>
+    </div>
+
+    <!-- Q2: Stars -->
+    <div class="card">
+      <h2 class="required">Rate your overall experience</h2>
+      <div class="stars" id="starsRow"></div>
+      <div class="error" id="starsError">Please rate</div>
+    </div>
+
+    <!-- Q3: Chips -->
+    <div class="card">
+      <h2 class="required">What did you enjoy?</h2>
+      <div class="chips" id="chipsRow"></div>
+      <div class="error" id="chipsError">Select at least one</div>
+    </div>
+
+    <!-- Q4: Matrix -->
+    <div class="card">
+      <h2 class="required">Rate on a 5-point scale</h2>
+      <table class="matrix-table" id="matrixTable"></table>
+      <div class="error" id="matrixError">Rate all criteria</div>
+    </div>
+
+    <!-- Q5: Long text -->
+    <div class="card">
+      <h2 class="required">What was most memorable?</h2>
+      <textarea id="q5" rows="3" placeholder="Your answer..."></textarea>
+      <div class="error" id="q5Error">Required field</div>
+    </div>
+
+    <!-- Q6: Three words -->
+    <div class="card">
+      <h2 class="required">Describe in three words</h2>
+      <input type="text" id="q6" placeholder="Three words...">
+      <div class="error" id="q6Error">Required field</div>
+    </div>
+
+    <!-- Q7: Improvements -->
+    <div class="card">
+      <h2>What can be improved?</h2>
+      <textarea id="q7" rows="3" placeholder="Optional..."></textarea>
+    </div>
+
+    <!-- Q8: Recommend -->
+    <div class="card">
+      <h2 class="required">Would you recommend this event?</h2>
+      <div class="radio-group" id="q8Group"></div>
+      <div class="error" id="q8Error">Please choose</div>
+    </div>
+
+    <button class="submit-btn" onclick="submitForm()">Submit</button>
+  </div>
+
+  <!-- Success message -->
+  <div class="container success-msg" id="successMsg" style="display:none">
+    <h2>Thank you!</h2>
+    <p>Your feedback has been submitted.</p>
+  </div>
+
+  <!-- Hidden iframe for Yandex Forms submission -->
+  <iframe id="yandex-iframe" name="yandex-iframe"></iframe>
+
+  <script>
+    // Yandex Forms config
+    const FORM_URL = 'https://forms.yandex.ru/cloud/69e76d6b6d2d73423e08733d/';
+    const Q_IDS = {
+      nps: 'answer_matrix_9008976029254264',
+      impression: 'answer_matrix_9008976029404796',
+      liked: 'answer_choices_9008976029503924',
+      matrix: 'answer_matrix_9008976029770808',
+      memorable: 'answer_short_text_9008976029979348',
+      threeWords: 'answer_short_text_9008976030141060',
+      improve: 'answer_short_text_9008976030191368',
+      recommend: 'answer_choices_9008976030266100'
+    };
+    // Q8 answer IDs
+    const Q8_OPTS = [
+      { label: 'Yes', id: '9008976030266110' },
+      { label: 'No', id: '1776775571704' },
+      { label: 'Not sure', id: '1776775587872' }
+    ];
+    // Q3 chips
+    const CHIPS = ['Program','Space','Atmosphere','People','Networking','Food','Location','Other'];
+    // Q4 matrix criteria
+    const CRITERIA = ['Program','Space','Atmosphere','People','City'];
+
+    // State
+    let state = { nps: null, stars: null, chips: [], matrix: {}, q5: '', q6: '', q7: '', q8: null };
+
+    // Build Q1 NPS
+    const npsRow = document.getElementById('npsRow');
+    for (let i = 0; i <= 10; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'nps-btn';
+      btn.textContent = i;
+      btn.onclick = () => { state.nps = i; document.querySelectorAll('.nps-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
+      npsRow.appendChild(btn);
+    }
+
+    // Build Q2 Stars
+    const starsRow = document.getElementById('starsRow');
+    for (let i = 1; i <= 5; i++) {
+      const s = document.createElement('span');
+      s.className = 'star';
+      s.innerHTML = '&#9733;';
+      s.onclick = () => { state.stars = i; document.querySelectorAll('.star').forEach((st, idx) => st.classList.toggle('active', idx < i)); };
+      starsRow.appendChild(s);
+    }
+
+    // Build Q3 Chips
+    const chipsRow = document.getElementById('chipsRow');
+    CHIPS.forEach(c => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.textContent = c;
+      chip.onclick = () => { chip.classList.toggle('active'); if (chip.classList.contains('active')) state.chips.push(c); else state.chips = state.chips.filter(x => x !== c); };
+      chipsRow.appendChild(chip);
+    });
+
+    // Build Q4 Matrix
+    const table = document.getElementById('matrixTable');
+    let thead = '<tr><th></th>';
+    for (let i = 1; i <= 5; i++) thead += '<th>' + i + '</th>';
+    thead += '</tr>';
+    let tbody = '';
+    CRITERIA.forEach(c => {
+      tbody += '<tr><td>' + c + '</td>';
+      for (let i = 1; i <= 5; i++) {
+        tbody += '<td><input type="radio" class="matrix-radio" name="m_' + c + '" value="' + i + '" onchange="state.matrix[\'' + c + '\']=' + i + '"></td>';
+      }
+      tbody += '</tr>';
+    });
+    table.innerHTML = thead + tbody;
+
+    // Build Q8 Radio
+    const q8Group = document.getElementById('q8Group');
+    Q8_OPTS.forEach(opt => {
+      const div = document.createElement('label');
+      div.className = 'radio-opt';
+      div.innerHTML = '<input type="radio" name="q8" value="' + opt.id + '"> ' + opt.label;
+      div.querySelector('input').onchange = () => { state.q8 = opt.id; document.querySelectorAll('.radio-opt').forEach(d => d.classList.remove('active')); div.classList.add('active'); };
+      q8Group.appendChild(div);
+    });
+
+    // Submit
+    function submitForm() {
+      // Update text state
+      state.q5 = document.getElementById('q5').value.trim();
+      state.q6 = document.getElementById('q6').value.trim();
+      state.q7 = document.getElementById('q7').value.trim();
+
+      // Validate
+      let valid = true;
+      const checks = [
+        [state.nps !== null, 'npsError'],
+        [state.stars !== null, 'starsError'],
+        [state.chips.length > 0, 'chipsError'],
+        [Object.keys(state.matrix).length === CRITERIA.length, 'matrixError'],
+        [state.q5 !== '', 'q5Error'],
+        [state.q6 !== '', 'q6Error'],
+        [state.q8 !== null, 'q8Error']
+      ];
+      checks.forEach(([ok, id]) => {
+        document.getElementById(id).style.display = ok ? 'none' : 'block';
+        if (!ok) valid = false;
+      });
+      if (!valid) return;
+
+      // Build URL params for Yandex Forms prefill
+      const params = new URLSearchParams();
+      // Q1 NPS (matrix with single criterion)
+      params.append(Q_IDS.nps, state.nps);
+      // Q2 Impression (matrix with single criterion)
+      params.append(Q_IDS.impression, state.stars);
+      // Q3 Multi-select chips
+      state.chips.forEach(c => params.append(Q_IDS.liked, c));
+      // Q4 Matrix ratings
+      Object.entries(state.matrix).forEach(([k, v]) => params.append(Q_IDS.matrix + '[' + k + ']', v));
+      // Q5-Q7 Text
+      params.append(Q_IDS.memorable, state.q5);
+      params.append(Q_IDS.threeWords, state.q6);
+      if (state.q7) params.append(Q_IDS.improve, state.q7);
+      // Q8 Single choice
+      params.append(Q_IDS.recommend, state.q8);
+
+      // Open Yandex Form with prefilled data in hidden iframe
+      const url = FORM_URL + '?' + params.toString();
+      document.getElementById('yandex-iframe').src = url;
+
+      // Show success
+      document.getElementById('formContainer').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
