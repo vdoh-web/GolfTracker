@@ -9,9 +9,6 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #f5f5f5;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
     }
     .header {
       background: #fff;
@@ -22,18 +19,9 @@
       top: 0;
       z-index: 10;
     }
-    .header h1 {
-      font-size: 24px;
-      font-weight: 700;
-      color: #1a1a1a;
-      margin-bottom: 4px;
-    }
-    .header p {
-      font-size: 14px;
-      color: #888;
-    }
+    .header h1 { font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+    .header p { font-size: 14px; color: #888; }
     .form-wrapper {
-      flex: 1;
       display: flex;
       justify-content: center;
       padding: 0;
@@ -41,7 +29,7 @@
     .form-wrapper iframe {
       width: 100%;
       max-width: 720px;
-      min-height: calc(100vh - 80px);
+      height: 2800px;
       border: none;
       background: #fff;
     }
@@ -65,7 +53,7 @@
     <p>We'd love your feedback!</p>
   </div>
   <div class="form-wrapper">
-    <iframe src="https://forms.yandex.ru/cloud/69e76d6b6d2d73423e08733d/?iframe=1" frameborder="0" scrolling="yes" allowfullscreen></iframe>
+    <iframe src="https://forms.yandex.ru/cloud/69e76d6b6d2d73423e08733d/?iframe=1" frameborder="0" allowfullscreen></iframe>
   </div>
   <div class="footer">
     &copy; 2025 VDOH. All rights reserved.
