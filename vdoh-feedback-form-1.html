@@ -6,267 +6,69 @@
   <title>VDOH - Feedback</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; min-height: 100vh; display: flex; justify-content: center; padding: 20px; }
-    .container { max-width: 640px; width: 100%; }
-    h1 { text-align: center; font-size: 28px; margin: 20px 0 8px; }
-    .subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 14px; }
-    .card { background: #fff; border-radius: 16px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .card h2 { font-size: 16px; margin-bottom: 16px; }
-    .required::after { content: ' *'; color: #e53935; }
-    .nps-row { display: flex; gap: 6px; flex-wrap: wrap; }
-    .nps-btn { width: 44px; height: 44px; border-radius: 10px; border: 2px solid #e0e0e0; background: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: all .2s; }
-    .nps-btn.active { background: #1a73e8; color: #fff; border-color: #1a73e8; }
-    .nps-labels { display: flex; justify-content: space-between; font-size: 11px; color: #999; margin-top: 6px; }
-    .stars { display: flex; gap: 8px; }
-    .star { font-size: 36px; cursor: pointer; color: #ddd; transition: color .2s; }
-    .star.active { color: #ffc107; }
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .chip { padding: 8px 16px; border-radius: 20px; border: 2px solid #e0e0e0; background: #fff; cursor: pointer; font-size: 14px; transition: all .2s; user-select: none; }
-    .chip.active { background: #e3f2fd; border-color: #1a73e8; color: #1a73e8; }
-    .matrix-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .matrix-table th { text-align: center; padding: 8px 4px; font-weight: 500; color: #666; }
-    .matrix-table td { padding: 10px 4px; border-top: 1px solid #f0f0f0; }
-    .matrix-table td:first-child { font-weight: 500; }
-    .matrix-table td:not(:first-child) { text-align: center; }
-    .matrix-radio { width: 20px; height: 20px; cursor: pointer; accent-color: #1a73e8; }
-    textarea, input[type=text] { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; font-family: inherit; resize: vertical; transition: border-color .2s; }
-    textarea:focus, input[type=text]:focus { outline: none; border-color: #1a73e8; }
-    .radio-group { display: flex; flex-direction: column; gap: 10px; }
-    .radio-opt { display: flex; align-items: center; gap: 10px; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; cursor: pointer; transition: all .2s; }
-    .radio-opt.active { border-color: #1a73e8; background: #e3f2fd; }
-    .radio-opt input { accent-color: #1a73e8; width: 18px; height: 18px; }
-    .submit-btn { width: 100%; padding: 16px; background: #1a73e8; color: #fff; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; cursor: pointer; transition: background .2s; margin-top: 8px; }
-    .submit-btn:hover { background: #1557b0; }
-    .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
-    .error { color: #e53935; font-size: 12px; margin-top: 6px; display: none; }
-    .success-msg { text-align: center; padding: 60px 20px; }
-    .success-msg h2 { font-size: 24px; margin-bottom: 12px; color: #2e7d32; }
-    .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 8px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      background: #fff;
+      padding: 16px 24px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+    .header p {
+      font-size: 14px;
+      color: #888;
+    }
+    .form-wrapper {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 0;
+    }
+    .form-wrapper iframe {
+      width: 100%;
+      max-width: 720px;
+      min-height: calc(100vh - 80px);
+      border: none;
+      background: #fff;
+    }
+    .footer {
+      text-align: center;
+      padding: 12px;
+      font-size: 12px;
+      color: #aaa;
+      background: #fff;
+    }
+    @media (max-width: 600px) {
+      .header { padding: 12px 16px; }
+      .header h1 { font-size: 20px; }
+      .form-wrapper iframe { max-width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <div class="container" id="formContainer">
+  <div class="header">
     <h1>VDOH</h1>
-    <p class="subtitle">We'd love your feedback!</p>
-
-    <!-- Q1: NPS -->
-    <div class="card">
-      <h2 class="required">Насколько вы готовы рекомендовать нас друзьям и знакомым?</h2>
-      <div class="nps-row" id="npsRow"></div>
-      <div class="nps-labels"><span>Совсем нет</span><span>Обязательно</span></div>
-      <div class="error" id="npsError">Выберите оценку</div>
-    </div>
-
-    <!-- Q2: Stars -->
-    <div class="card">
-      <h2 class="required">Оцените общее впечатление</h2>
-      <div class="stars" id="starsRow"></div>
-      <div class="error" id="starsError">Поставьте оценку</div>
-    </div>
-
-    <!-- Q3: Chips -->
-    <div class="card">
-      <h2 class="required">Что вам понравилось?</h2>
-      <div class="chips" id="chipsRow"></div>
-      <div class="error" id="chipsError">Выберите хотя бы один вариант</div>
-    </div>
-
-    <!-- Q4: Matrix -->
-    <div class="card">
-      <h2 class="required">Оцените по 5-балльной шкале</h2>
-      <table class="matrix-table" id="matrixTable"></table>
-      <div class="error" id="matrixError">Оцените все критерии</div>
-    </div>
-
-    <!-- Q5 -->
-    <div class="card">
-      <h2 class="required">Что больше всего запомнилось?</h2>
-      <textarea id="q5" rows="3" placeholder="Ваш ответ..."></textarea>
-      <div class="error" id="q5Error">Обязательное поле</div>
-    </div>
-
-    <!-- Q6 -->
-    <div class="card">
-      <h2 class="required">Опишите мероприятие тремя словами</h2>
-      <input type="text" id="q6" placeholder="Три слова...">
-      <div class="error" id="q6Error">Обязательное поле</div>
-    </div>
-
-    <!-- Q7 -->
-    <div class="card">
-      <h2>Что можно улучшить?</h2>
-      <textarea id="q7" rows="3" placeholder="Необязательно..."></textarea>
-    </div>
-
-    <!-- Q8 -->
-    <div class="card">
-      <h2 class="required">Порекомендуете ли вы мероприятие друзьям?</h2>
-      <div class="radio-group" id="q8Group"></div>
-      <div class="error" id="q8Error">Выберите ответ</div>
-    </div>
-
-    <button class="submit-btn" id="submitBtn" onclick="submitForm()">Отправить</button>
+    <p>We'd love your feedback!</p>
   </div>
-
-  <div class="container success-msg" id="successMsg" style="display:none">
-    <h2>Спасибо!</h2>
-    <p>Ваш отзыв отправлен.</p>
+  <div class="form-wrapper">
+    <iframe src="https://forms.yandex.ru/cloud/69e76d6b6d2d73423e08733d/?iframe=1" frameborder="0" scrolling="yes" allowfullscreen></iframe>
   </div>
-
-  <script>
-    // === CONFIG ===
-    const SURVEY_ID = '69e76d6b6d2d73423e08733d';
-    const API_URL = 'https://api.forms.yandex.net/v1/surveys/' + SURVEY_ID + '/form';
-    const FORM_URL = 'https://forms.yandex.ru/cloud/' + SURVEY_ID + '/';
-
-    // Question IDs
-    const Q = {
-      nps: 'answer_matrix_9008976029254264',
-      impression: 'answer_matrix_9008976029404796',
-      liked: 'answer_choices_9008976029503924',
-      matrix: 'answer_matrix_9008976029770808',
-      memorable: 'answer_short_text_9008976029979348',
-      threeWords: 'answer_short_text_9008976030141060',
-      improve: 'answer_short_text_9008976030191368',
-      recommend: 'answer_choices_9008976030266100'
-    };
-
-    // Q8 answer variant IDs
-    const Q8 = [
-      { label: 'Да', id: '9008976030266110' },
-      { label: 'Нет', id: '1776775571704' },
-      { label: 'Затрудняюсь ответить', id: '1776775587872' }
-    ];
-
-    const CHIPS = ['Программа','Пространство','Атмосфера','Люди','Нетворкинг','Еда','Локация','Другое'];
-    const CRITERIA = ['Программа','Пространство','Атмосфера','Люди','Город'];
-
-    let state = { nps: null, stars: null, chips: [], matrix: {}, q5: '', q6: '', q7: '', q8: null };
-
-    // Build NPS
-    const npsRow = document.getElementById('npsRow');
-    for (let i = 0; i <= 10; i++) {
-      const b = document.createElement('button');
-      b.className = 'nps-btn'; b.textContent = i; b.type = 'button';
-      b.onclick = () => { state.nps = i; document.querySelectorAll('.nps-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); };
-      npsRow.appendChild(b);
-    }
-
-    // Build Stars
-    const sr = document.getElementById('starsRow');
-    for (let i = 1; i <= 5; i++) {
-      const s = document.createElement('span'); s.className = 'star'; s.innerHTML = '&#9733;';
-      s.onclick = () => { state.stars = i; document.querySelectorAll('.star').forEach((x,idx) => x.classList.toggle('active', idx < i)); };
-      sr.appendChild(s);
-    }
-
-    // Build Chips
-    const cr = document.getElementById('chipsRow');
-    CHIPS.forEach(c => {
-      const ch = document.createElement('span'); ch.className = 'chip'; ch.textContent = c;
-      ch.onclick = () => { ch.classList.toggle('active'); if (ch.classList.contains('active')) state.chips.push(c); else state.chips = state.chips.filter(x => x !== c); };
-      cr.appendChild(ch);
-    });
-
-    // Build Matrix
-    const mt = document.getElementById('matrixTable');
-    let h = '<tr><th></th>'; for (let i=1;i<=5;i++) h+='<th>'+i+'</th>'; h+='</tr>';
-    let tb = '';
-    CRITERIA.forEach(c => {
-      tb += '<tr><td>'+c+'</td>';
-      for (let i=1;i<=5;i++) tb += '<td><input type="radio" class="matrix-radio" name="m_'+c+'" value="'+i+'" onchange="state.matrix[\''+c+'\']='+i+'"></td>';
-      tb += '</tr>';
-    });
-    mt.innerHTML = h + tb;
-
-    // Build Q8
-    const q8g = document.getElementById('q8Group');
-    Q8.forEach(o => {
-      const d = document.createElement('label'); d.className = 'radio-opt';
-      d.innerHTML = '<input type="radio" name="q8" value="'+o.id+'"> '+o.label;
-      d.querySelector('input').onchange = () => { state.q8 = o.id; document.querySelectorAll('.radio-opt').forEach(x => x.classList.remove('active')); d.classList.add('active'); };
-      q8g.appendChild(d);
-    });
-
-    // Submit
-    async function submitForm() {
-      state.q5 = document.getElementById('q5').value.trim();
-      state.q6 = document.getElementById('q6').value.trim();
-      state.q7 = document.getElementById('q7').value.trim();
-
-      let valid = true;
-      [[state.nps !== null,'npsError'],[state.stars !== null,'starsError'],[state.chips.length > 0,'chipsError'],[Object.keys(state.matrix).length === CRITERIA.length,'matrixError'],[state.q5 !== '','q5Error'],[state.q6 !== '','q6Error'],[state.q8 !== null,'q8Error']].forEach(([ok,id]) => {
-        document.getElementById(id).style.display = ok ? 'none' : 'block';
-        if (!ok) valid = false;
-      });
-      if (!valid) return;
-
-      const btn = document.getElementById('submitBtn');
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span>Отправка...';
-
-      // Build payload
-      const payload = {};
-      payload[Q.nps] = state.nps;
-      payload[Q.impression] = state.stars;
-      payload[Q.liked] = state.chips;
-      payload[Q.matrix] = {};
-      Object.entries(state.matrix).forEach(([k,v]) => payload[Q.matrix][k] = v);
-      payload[Q.memorable] = state.q5;
-      payload[Q.threeWords] = state.q6;
-      if (state.q7) payload[Q.improve] = state.q7;
-      payload[Q.recommend] = state.q8;
-
-      let success = false;
-
-      // Method 1: Direct API call
-      try {
-        const resp = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (resp.ok) success = true;
-      } catch(e) {
-        console.log('Direct API failed, trying no-cors:', e);
-      }
-
-      // Method 2: no-cors fallback (fire-and-forget)
-      if (!success) {
-        try {
-          await fetch(API_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify(payload)
-          });
-          success = true; // assume sent (opaque response)
-        } catch(e2) {
-          console.log('no-cors also failed:', e2);
-        }
-      }
-
-      // Method 3: sendBeacon fallback
-      if (!success) {
-        try {
-          const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-          navigator.sendBeacon(API_URL, blob);
-          success = true;
-        } catch(e3) {
-          console.log('sendBeacon failed:', e3);
-        }
-      }
-
-      if (success) {
-        document.getElementById('formContainer').style.display = 'none';
-        document.getElementById('successMsg').style.display = 'block';
-      } else {
-        btn.disabled = false;
-        btn.textContent = 'Отправить';
-        alert('Ошибка отправки. Попробуйте ещё раз.');
-      }
-    }
-  </script>
+  <div class="footer">
+    &copy; 2025 VDOH. All rights reserved.
+  </div>
 </body>
 </html>
